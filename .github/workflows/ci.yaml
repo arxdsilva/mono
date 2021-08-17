@@ -1,0 +1,20 @@
+name: Test and coverage
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.16'
+      - name: Test pkg1
+        run: cd pkg1 && go test -coverprofile=../coverage1.out -covermode=atomic ./...
+      - name: Test pkg2
+        run: cd pkg2 && go test -coverprofile=../coverage2.out -covermode=atomic ./...
+      - name: Upload coverage to Codecov
+        run: bash <(curl -s https://codecov.io/bash)
