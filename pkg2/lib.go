@@ -11,3 +11,7 @@ func WorldByte() []byte {
 func World() string {
 	return "World"
 }
+
+func World2() string {
+	return "World2"
+}
