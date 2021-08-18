@@ -7,3 +7,7 @@ func WorldString() string {
 func WorldByte() []byte {
 	return []byte("World")
 }
+
+func World() string {
+	return "World"
+}
