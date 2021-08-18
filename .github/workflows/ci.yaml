@@ -12,7 +12,13 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: '1.16'
+      - name: Install goveralls
+        run: go install github.com/mattn/goveralls@latest
       - name: Test pkg1
-        run: cd pkg1 && go test -coverprofile=../coverage1.out -covermode=atomic ./... && cd .. && bash <(curl -s https://codecov.io/bash) -F pkg1
+        env:
+          COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: cd pkg1 && go test -coverprofile=coverage1.out -covermode=atomic ./... && goveralls -coverprofile=coverage1.out -service=github -reponame=mono && cd ..
       - name: Test pkg2
-        run: cd pkg2 && go test -coverprofile=../coverage2.out -covermode=atomic ./... && cd .. && bash <(curl -s https://codecov.io/bash) -F pkg2
+        env:
+          COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: cd pkg2 && go test -coverprofile=coverage2.out -covermode=atomic ./... && goveralls -coverprofile=coverage2.out -service=github -reponame=mono && cd ..
