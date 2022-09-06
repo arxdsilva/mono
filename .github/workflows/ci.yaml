@@ -16,3 +16,26 @@ jobs:
         run: cd pkg1 && go test -coverprofile=../coverage1.out -covermode=atomic ./... && cd .. && bash <(curl -s https://codecov.io/bash) -F pkg1
       - name: Test pkg2
         run: cd pkg2 && go test -coverprofile=../coverage2.out -covermode=atomic ./... && cd .. && bash <(curl -s https://codecov.io/bash) -F pkg2
+
+      - name: Check file existence
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: pkg1/buf.yaml
+
+      - name: File exists
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: echo All files exists!
+
+      - name: buf setup action
+        uses: bufbuild/buf-setup-action@v1
+
+      - uses: bufbuild/buf-breaking-action@v1
+        if: steps.check_files.outputs.files_exists == 'true'
+        with:
+          against: 'https://github.com/${GITHUB_REPOSITORY}.git#branch=master,ref=HEAD~1,subdir=pkg1'
+      - uses: bufbuild/buf-push-action@v1
+        if: steps.check_files.outputs.files_exists == 'true'
+        with:
+          input: pkg1
+          buf_token: ${{ secrets.BUF_TOKEN }}
